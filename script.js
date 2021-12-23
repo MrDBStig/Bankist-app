@@ -76,8 +76,21 @@ const displayMovements = function (movements) {
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
-
 displayMovements(account1.movements);
+
+const createUsernames = function (accs) {
+  accs.forEach(function (acc) {
+    acc.username = acc.owner
+      .toLowerCase()
+      .split(' ')
+      .map(name => name[0])
+      .join('');
+  });
+};
+
+createUsernames(accounts);
+// console.log(accounts);
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
@@ -113,3 +126,11 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 // const currenciesUnique = new Set(['USD', 'GBP', 'EUR', 'EUR', 'USD']);
 // console.log(currenciesUnique);
 // currenciesUnique.forEach((value, key, map) => console.log(`${key}: ${value}`));
+
+/////////////////////////////////////////////////
+// Map method
+// const eurToUsd = 1.1;
+// const movementsToUsd = mov => Math.trunc(mov * eurToUsd);
+// const movementsUSD = movements.map(movementsToUsd);
+// console.log(movements);
+// console.log(movementsUSD);
