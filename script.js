@@ -160,6 +160,24 @@ btnTransfer.addEventListener('click', e => {
   inputTransferAmount.blur();
 });
 
+// Event handler for account closing (deleting)
+btnClose.addEventListener('click', e => {
+  e.preventDefault();
+  if (
+    currentAccount.username === inputCloseUsername.value &&
+    currentAccount.pin === +inputClosePin.value
+  ) {
+    const index = accounts.findIndex(
+      acc => acc.username === currentAccount.username
+    );
+    accounts.splice(index, 1); // Delete account
+    containerApp.style.opacity = 0; // Hiding UI
+    // Clearing inputs
+    inputClosePin.value = inputCloseUsername.value = '';
+    inputClosePin.blur();
+  }
+});
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
