@@ -161,6 +161,20 @@ btnTransfer.addEventListener('click', e => {
 });
 
 // Event handler for account closing (deleting)
+btnLoan.addEventListener('click', e => {
+  e.preventDefault();
+  const loanAmount = +inputLoanAmount.value;
+  if (
+    loanAmount > 0 &&
+    currentAccount.movements.some(dep => dep >= loanAmount * 0.1)
+  ) {
+    currentAccount.movements.push(loanAmount); // Add this movement
+    updateUI(currentAccount);
+  }
+  inputLoanAmount.value = '';
+});
+
+// Event handler for account closing (deleting)
 btnClose.addEventListener('click', e => {
   e.preventDefault();
   if (
