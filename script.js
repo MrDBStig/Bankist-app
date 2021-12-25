@@ -77,9 +77,9 @@ const displayMovements = function (movements) {
   });
 };
 
-const calcDisplayBalance = function (movements) {
-  const balance = movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${balance} €`;
+const calcDisplayBalance = function (acc) {
+  acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${acc.balance} €`;
 };
 
 const calcDisplaySummary = function (acc) {
@@ -114,8 +114,14 @@ const createUsernames = function (accs) {
 createUsernames(accounts);
 // console.log(accounts);
 
+const updateUI = function (acc) {
+  displayMovements(acc.movements); // Display movements
+  calcDisplayBalance(acc); // Display balance
+  calcDisplaySummary(acc); // Display summary
+};
+
 let currentAccount;
-// Event handler
+// Event handler for login
 btnLogin.addEventListener('click', e => {
   e.preventDefault();
   currentAccount = accounts.find(
@@ -128,10 +134,30 @@ btnLogin.addEventListener('click', e => {
     containerApp.style.opacity = 100; // Displaying UI
     inputLoginUsername.value = inputLoginPin.value = ''; // Clear input fields
     inputLoginPin.blur(); // Display out focus on pin pinput
-    displayMovements(currentAccount.movements); // Display movements
-    calcDisplayBalance(currentAccount.movements); // Display balance
-    calcDisplaySummary(currentAccount); // Display summary
+    updateUI(currentAccount);
   }
+});
+
+// Event handler for transfer
+btnTransfer.addEventListener('click', e => {
+  e.preventDefault();
+  const amount = +inputTransferAmount.value,
+    recieverAcc = accounts.find(acc => acc.username === inputTransferTo.value);
+  if (
+    amount > 0 &&
+    recieverAcc &&
+    amount <= currentAccount.balance &&
+    recieverAcc?.username !== currentAccount.username
+  ) {
+    // Doing transfer
+    currentAccount.movements.push(-amount);
+    recieverAcc.movements.push(amount);
+    // Updating UI
+    updateUI(currentAccount);
+  }
+  // Clearing inputs
+  inputTransferAmount.value = inputTransferTo.value = '';
+  inputTransferAmount.blur();
 });
 
 /////////////////////////////////////////////////
