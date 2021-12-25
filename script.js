@@ -76,31 +76,30 @@ const displayMovements = function (movements) {
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
-displayMovements(account1.movements);
 
 const calcDisplayBalance = function (movements) {
   const balance = movements.reduce((acc, mov) => acc + mov, 0);
   labelBalance.textContent = `${balance} €`;
 };
-calcDisplayBalance(account1.movements);
 
-const calcDisplaySummary = function (movements) {
-  const incomes = movements
+const calcDisplaySummary = function (acc) {
+  const incomes = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
   labelSumIn.textContent = `${incomes} €`;
 
-  const out = movements.filter(mov => mov < 0).reduce((acc, mov) => acc + mov);
+  const out = acc.movements
+    .filter(mov => mov < 0)
+    .reduce((acc, mov) => acc + mov, 0);
   labelSumOut.textContent = `${Math.abs(out)} €`;
 
-  const interest = movements
+  const interest = acc.movements
     .filter(mov => mov > 0)
-    .map(deposit => (deposit * 1.2) / 100)
+    .map(deposit => (deposit * acc.interestRate) / 100)
     .filter(int => int >= 1)
-    .reduce((acc, int) => acc + int);
+    .reduce((acc, int) => acc + int, 0);
   labelSumInterest.textContent = `${interest} €`;
 };
-calcDisplaySummary(account1.movements);
 
 const createUsernames = function (accs) {
   accs.forEach(function (acc) {
@@ -114,6 +113,26 @@ const createUsernames = function (accs) {
 
 createUsernames(accounts);
 // console.log(accounts);
+
+let currentAccount;
+// Event handler
+btnLogin.addEventListener('click', e => {
+  e.preventDefault();
+  currentAccount = accounts.find(
+    acc => acc.username === inputLoginUsername.value
+  );
+  if (currentAccount?.pin === +inputLoginPin.value) {
+    labelWelcome.textContent = `Welcome back, ${
+      currentAccount.owner.split(' ')[0]
+    }!`; // Display welcome message
+    containerApp.style.opacity = 100; // Displaying UI
+    inputLoginUsername.value = inputLoginPin.value = ''; // Clear input fields
+    inputLoginPin.blur(); // Display out focus on pin pinput
+    displayMovements(currentAccount.movements); // Display movements
+    calcDisplayBalance(currentAccount.movements); // Display balance
+    calcDisplaySummary(currentAccount); // Display summary
+  }
+});
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
@@ -178,3 +197,8 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 //   else return mov;
 // }, movements[0]);
 // console.log(max);
+
+/////////////////////////////////////////////////
+// Find method
+// const account = accounts.find(acc => acc.owner === 'Jessica Davis');
+// console.log(account);
