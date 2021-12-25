@@ -61,9 +61,14 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort = false) {
   containerMovements.innerHTML = ''; // Clear movements in HTML
-  movements.forEach(function (mov, i) {
+
+  const movs = sort
+    ? movements.slice().sort((a, b) => a - b) // Sort items in movements window
+    : movements;
+
+  movs.forEach(function (mov, i) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
     const html = `
       <div class="movements__row">
@@ -192,6 +197,16 @@ btnClose.addEventListener('click', e => {
   }
 });
 
+// Event handler for sorting
+let sorted = false;
+btnSort.addEventListener('click', e => {
+  e.preventDefault();
+  displayMovements(
+    currentAccount.movements,
+    sorted ? (sorted = false) : (sorted = true)
+  );
+});
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
@@ -260,3 +275,10 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 // Find method
 // const account = accounts.find(acc => acc.owner === 'Jessica Davis');
 // console.log(account);
+
+/////////////////////////////////////////////////
+// flatMap method
+// const allMovements = accounts
+// .flatMap(acc => acc.movements)
+// .reduce((acc, mov) => acc + mov);
+// console.log(allMovements);
