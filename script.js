@@ -177,12 +177,31 @@ const updateUI = function (acc) {
   calcDisplaySummary(acc); // Display summary
 };
 
-let currentAccount;
+// Log out timer
+const startLogOutTimer = function () {
+  let timeLog = 300; // 5 mins
+  const tick = function () {
+    const min = `${Math.trunc(timeLog / 60)}`.padStart(2, 0),
+      sec = `${timeLog % 60}`.padStart(2, 0);
+    labelTimer.textContent = `${min}:${sec}`;
+    if (timeLog === 0) {
+      clearInterval(timer);
+      containerApp.style.opacity = 0; // Hiding UI
+      labelWelcome.textContent = 'Log in to get started';
+    }
+    timeLog--;
+  };
+  tick();
+  const timer = setInterval(tick, 1000);
+  return timer;
+};
+
+let currentAccount, timer;
 
 // Fake always log in
-currentAccount = account1;
-updateUI(currentAccount);
-containerApp.style.opacity = 100; // Displaying UI
+// currentAccount = account1;
+// updateUI(currentAccount);
+// containerApp.style.opacity = 100; // Displaying UI
 
 // Event handler for login
 btnLogin.addEventListener('click', e => {
@@ -198,6 +217,10 @@ btnLogin.addEventListener('click', e => {
     inputLoginUsername.value = inputLoginPin.value = ''; // Clear input fields
     inputLoginPin.blur(); // Display out focus on pin pinput
     updateUI(currentAccount);
+    if (timer) {
+      clearInterval(timer);
+    }
+    timer = startLogOutTimer();
     // Create current date
     const now = new Date(),
       options = {
@@ -244,6 +267,10 @@ btnTransfer.addEventListener('click', e => {
   // Clearing inputs
   inputTransferAmount.value = inputTransferTo.value = '';
   inputTransferAmount.blur();
+
+  // Resetting the timer
+  clearInterval(timer);
+  timer = startLogOutTimer();
 });
 
 // Event handler for loan
@@ -259,6 +286,9 @@ btnLoan.addEventListener('click', e => {
       currentAccount.movementsDates.push(new Date().toISOString()); // Add loan date
       updateUI(currentAccount);
     }, 2500);
+    // Resetting the timer
+    clearInterval(timer);
+    timer = startLogOutTimer();
   }
   inputLoanAmount.value = '';
 });
